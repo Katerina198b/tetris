@@ -1,19 +1,55 @@
+package Controller;
+
 import Model.Board;
 import Model.Rating;
 import View.View;
+import View.RatingPanel;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.awt.Label;
+import java.awt.TextField;
+
+import java.io.PrintWriter;
+
+import static java.lang.Thread.sleep;
 
 /**
  * Считывает 5 лучший результатов пользователей с сервера
- * Создается модель доски, визульаную составляющую и контроллер
+ * Создается модель доски, визульаную составляющую и реализует контроллер
  * (Используется MVC модель)
  */
-public class Main {
+public class Controller {
     private final static int PORT = 11111;
     private final static String HOST = "localhost";
+
+    /**
+     * Прослушивает нажатие на кнопку отправления на сервис нового результата
+     * Если кнопка нажата, отправляет логин и баллы на сервер
+     * Убирает с экрана форму ввода
+     */
+    public static class RatingListener implements ActionListener {
+        private int score;
+        private RatingPanel ratingPanel;
+        private PrintWriter out;
+
+        RatingListener(RatingPanel ratingPanel, int score, PrintWriter out) {
+            this.score = score;
+            this.ratingPanel = ratingPanel;
+            this.out = out;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String login = ratingPanel.textField.getText();
+            ratingPanel.clearButton();
+            out.println(login);
+            out.println(score);
+        }
+    }
 
     public static void main(String[] args) {
         PrintWriter out = null;
@@ -51,11 +87,20 @@ public class Main {
             }
 
             Rating rating = new Rating(ratingList);
-            View view = new View(board, rating, out);
+            View view = new View(board, rating);
+
+
+            RatingListener listener = new RatingListener(view.getPanel(), board.getScore().getScore(), out);
+
+            view.getPanel().button.addActionListener(listener);
 
             try {
-                Controller controller = new Controller(board, view);
-                controller.start();
+                while (!board.getLoose()) {
+                    view.window.refresh();
+                    sleep(500);
+                    board.refresh();
+                }
+                view.ratingSetVisible();
             } catch (InterruptedException e) {
                 System.err.println("Произошла ошибка в контроллере");
                 e.printStackTrace();

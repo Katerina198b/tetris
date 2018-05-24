@@ -33,31 +33,29 @@ public class Server {
         try {
             serverSocket = new ServerSocket(SOCKET_PORT);
             while (!Thread.currentThread().isInterrupted()) {
-                ServerSocket finalServerSocket = serverSocket;
-                pool.submit(() -> {
-                    Socket socket = null;
-                    try {
-                        try {
-                            socket = finalServerSocket.accept();
-                        } catch (IOException e) {
-                            System.err.println("Не удалось создать сокет");
-                            e.printStackTrace();
-                        }
-                        System.out.println("Соединение с новым клиентом");
+                Socket socket = null;
+                try {
+                    socket = serverSocket.accept();
+                } catch (IOException e) {
+                    System.err.println("Не удалось создать сокет");
+                    e.printStackTrace();
+                }
 
+                Socket finalSocket = socket;
+                pool.submit(() -> {
+                    try{
+                        System.out.println("Соединение с новым клиентом");
                         FileWriter fileWriter = null;
                         FileReader fileReader = null;
                         BufferedReader bufferedReader = null;
                         BufferedWriter bufferedWriter = null;
                         PrintWriter printWriter = null;
                         BufferedReader bufferIn = null;
-
                         try {
                             fileWriter = new FileWriter(FILENAME, true);
                             fileReader = new FileReader(FILENAME);
                             bufferedReader = new BufferedReader(fileReader);
-                            printWriter = new PrintWriter(socket.getOutputStream(), true);
-
+                            printWriter = new PrintWriter(finalSocket.getOutputStream(), true);
                             String line;
                             ArrayList<String> lines = new ArrayList<>();
                             while ((line = bufferedReader.readLine()) != null && !line.equals("")) {
@@ -67,9 +65,12 @@ public class Server {
                             for (int i = 0; i < 5; i++) {
                                 printWriter.println(lines.get(i));
                             }
-
+                            System.out.println("4");
                             printWriter.println();
-                            bufferIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                            System.out.println("5");
+                            bufferIn = new BufferedReader(new InputStreamReader(finalSocket.getInputStream()));
+                            System.out.println("6");
+
                             String login = bufferIn.readLine();
                             String score = bufferIn.readLine();
 
@@ -78,7 +79,7 @@ public class Server {
                                 bufferedWriter.write(login + ": " + score + '\n');
                                 printWriter.println(login + ": " + score);
 
-                            } catch (IOException e) {
+                            } catch (Exception e) {
                                 System.err.println("Не получилось добавить данные" + login + ' ' + score);
                                 e.printStackTrace();
                             }
@@ -107,14 +108,15 @@ public class Server {
                                 if (bufferIn != null) {
                                     bufferIn.close();
                                 }
-                            } catch (IOException e) {
+                            } catch (Exception e) {
                                 System.err.println("Не получилось закрыть buffer или file");
                                 e.printStackTrace();
                             }
                         }
                     } finally {
                         try {
-                            socket.close();
+                            finalSocket.close();
+                            System.out.println("Отключение клиента");
                         } catch (IOException e) {
                             System.err.println("Не получилось закрыть сокет");
                             e.printStackTrace();

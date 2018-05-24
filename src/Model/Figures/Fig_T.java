@@ -11,6 +11,9 @@ import java.util.ArrayList;
 public class Fig_T extends Figure {
 
     private int phase = -1;
+    private int phaseX = 1;
+    private int phaseY = 1;
+    private int l = 1;
 
     public Fig_T(int color) {
         super(5, 0, 5, 1, 4, 1, 5, 2, color);
@@ -21,13 +24,32 @@ public class Fig_T extends Figure {
     public void rotate() {
         phase = phase * (-1);
         ArrayList<Block> blocks = getBlocks();
-        refreshFigureIfItPossible(blocks.get(0).getPosX(),
-                blocks.get(0).getPosY() + 2 * phase,
-                blocks.get(1).getPosX() - phase,
-                blocks.get(1).getPosY() + phase,
-                blocks.get(2).getPosX(), blocks.get(2).getPosY(),
-                blocks.get(3).getPosX() - 2 * phase,
-                blocks.get(3).getPosY());
+        refreshFigureIfItPossible(blocks.get(0).getPosX() + phaseX,
+                blocks.get(0).getPosY() + phaseY,
+                blocks.get(1).getPosX(), blocks.get(1).getPosY(),
+                blocks.get(2).getPosX() + phaseX * phase, blocks.get(2).getPosY() - phaseY * phase,
+                blocks.get(3).getPosX() - phaseX,
+                blocks.get(3).getPosY() - phaseY);
+        switch (l) {
+            case 0:
+                phaseX = 1;
+                phaseY = 1;
+                break;
+            case 1:
+                phaseX = -1;
+                phaseY = 1;
+                break;
+            case 2:
+                phaseX = -1;
+                phaseY = -1;
+                break;
+            case 3:
+                phaseX = 1;
+                phaseY = -1;
+                break;
+        }
+
+        l = (l + 1) % 4;
     }
 
 }

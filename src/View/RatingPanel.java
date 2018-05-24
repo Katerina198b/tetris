@@ -15,16 +15,28 @@ import java.awt.Label;
 import java.awt.Button;
 import java.awt.TextField;
 
-import java.io.PrintWriter;
 import java.util.ArrayList;
 
 
 /**
  * Возращает содержимое для RatingDialog
  */
-class RatingPanel extends JPanel {
+public class RatingPanel extends JPanel {
     private Rating ratingModel;
     private Label scoreLabel;
+    public Button button;
+    public TextField textField;
+    private Label label;
+    private JPanel ratingPanel;
+    public  GridBagConstraints c;
+
+    public void clearButton() {
+        remove(button);
+        remove(label);
+        remove(textField);
+        c.gridy += 1;
+        add(new Label("Данные были добавлены"), c);
+    }
 
     private JPanel makeRatingPanel(String str) {
         ArrayList<String> rating = ratingModel.getRating();
@@ -48,17 +60,17 @@ class RatingPanel extends JPanel {
         scoreLabel.setText("Your score is " + String.valueOf(score));
     }
 
-    RatingPanel(Board board, Rating r, PrintWriter out) {
+    RatingPanel(Board board, Rating r) {
 
         int score = board.getScore().getScore();
         ratingModel = r;
 
         setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
+        c = new GridBagConstraints();
         c.insets = new Insets(10, 5, 10, 5);
         c.fill = GridBagConstraints.VERTICAL;
 
-        JPanel ratingPanel = makeRatingPanel(null);
+        ratingPanel = makeRatingPanel(null);
 
         c.gridx = 0;
         c.gridy = 0;
@@ -69,18 +81,16 @@ class RatingPanel extends JPanel {
         add(scoreLabel, c);
 
         c.gridy += 1;
-        Label l = new Label("Enter your login", Label.CENTER);
-        add(l, c);
+        label = new Label("Enter your login", Label.CENTER);
+        add(label, c);
 
         c.gridy += 1;
-        TextField input = new TextField(12);
-        add(input, c);
+        textField = new TextField(12);
+        add(textField, c);
 
         c.gridy += 1;
-        Button button = new Button("Add to rating");
+        button = new Button("Add to rating");
 
-        RatingListener listener = new RatingListener(input, score, out, button, l, ratingPanel, this, c);
-        button.addActionListener(listener);
         add(button, c);
 
     }

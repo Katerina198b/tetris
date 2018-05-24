@@ -48,7 +48,6 @@ public class Board {
     private Figure giveRandomFigure() {
         int i = random.nextInt(6);
         int color = random.nextInt(7);
-
         switch (i) {
             case 0:
                 return new Fig_I(color);
@@ -162,6 +161,19 @@ public class Board {
             }
         }
         recurrentCells();
+    }
+
+    /**
+     * Сделать ход вниз
+     */
+    public void refresh() {
+        if (!currentFigureMustStopDown()) {
+           currentFigureDown();
+
+        } else {
+           cleanLinesIfNeeded();
+           refreshCurrentFigure();
+        }
     }
 
     private boolean currentFigureMustStopRight() {

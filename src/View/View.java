@@ -20,6 +20,10 @@ public class View {
     private RatingDialog ratingDialog;
     private RatingPanel panel;
 
+    public RatingPanel getPanel() {
+        return panel;
+    }
+
 
     public void ratingSetVisible() {
         panel.setScore(board.getScore().getScore());
@@ -27,7 +31,7 @@ public class View {
         panel.setScore(board.getScore().getScore());
     }
 
-    public View(Board b, Rating r, PrintWriter out) {
+    public View(Board b, Rating r) {
         board = b;
         window = new Window(board);
         window.setBounds(100, 100, 470, 500);
@@ -76,7 +80,7 @@ public class View {
         window.addKeyListener(moveListener);
 
         ratingDialog = new RatingDialog(window);
-        panel = new RatingPanel(board, r, out);
+        panel = new RatingPanel(board, r);
         ratingDialog.add(panel);
         ratingDialog.addWindowListener(closeAdapter);
         ratingDialog.setVisible(false);

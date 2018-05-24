@@ -1,4 +1,6 @@
-package View;
+package Controller;
+
+import View.RatingPanel;
 
 import javax.swing.JPanel;
 
@@ -16,7 +18,7 @@ import java.io.PrintWriter;
  * Если кнопка нажата, отправляет логин и баллы на сервер
  * Убирает с экрана форму ввода
  */
-class RatingListener implements ActionListener {
+public class RatingListener implements ActionListener {
     private TextField textField;
     private int score;
     private PrintWriter out;
